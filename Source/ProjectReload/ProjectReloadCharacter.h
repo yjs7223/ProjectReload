@@ -61,5 +61,42 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	UFUNCTION(BlueprintCallable)
+		bool Fire();
+
+	UFUNCTION()
+		void StartFire();
+
+	UFUNCTION()
+		void StopFire();
+
+	UFUNCTION()
+		void RotateInit();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		bool isFire;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		bool isReload;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		bool isAiming;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		bool isRun;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		FVector camerapos;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+		FVector camerapos_Crouch;
+
+	UPROPERTY()
+		FVector movevec;
+
+	UPROPERTY()
+		TSubclassOf<class ULivingComponent> asd;
 };
 

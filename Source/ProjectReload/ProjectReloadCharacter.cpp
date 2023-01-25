@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "LivingComponent.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AProjectReloadCharacter
@@ -72,9 +73,77 @@ void AProjectReloadCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("Look Up / Down Gamepad", this, &AProjectReloadCharacter::LookUpAtRate);
 
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AProjectReloadCharacter::StartFire);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &AProjectReloadCharacter::StopFire);
+
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AProjectReloadCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &AProjectReloadCharacter::TouchStopped);
+}
+
+bool AProjectReloadCharacter::Fire()
+{
+	//FireRate += DeltaTime;
+	//if (FireCoolTime > FireRate) return;
+	if (!isFire) return false;
+	//FireRate = 0.f;
+	FVector start;
+	FRotator cameraRotation;
+	FVector end;
+	Controller->GetPlayerViewPoint(start, cameraRotation);
+	end = start + (cameraRotation.Vector() * 1000);
+
+	FHitResult result;
+	FCollisionQueryParams param(NAME_None, true, this);
+
+	DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 2.0f);
+	if (GetWorld()->LineTraceSingleByChannel(result, start, end, ECC_Visibility, param)) {
+
+		auto temp = result.GetActor()->GetComponentByClass(asd);
+		if (temp) {
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("actor1 : %s"), *temp->GetName()));
+			dynamic_cast<ULivingComponent*>(temp)->Ondamage(10);
+		}
+
+
+
+
+
+		TSet<UActorComponent*> components = result.GetActor()->GetComponents();
+		for (UActorComponent* item : components) {
+
+			if (dynamic_cast<ULivingComponent*>(item)) {
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("actor2 : %s"), *item->GetName()));
+				dynamic_cast<ULivingComponent*>(item)->Ondamage(10);
+			}
+		}
+
+
+		//dynamic_cast<ULivingComponent*>(result.GetActor()->GetComponentByClass(TSubclassOf<ULivingComponent>()))->Ondamage(10);
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, TEXT("nonhit"));
+	}
+
+	RotateInit();
+	return true;
+}
+
+void AProjectReloadCharacter::StartFire()
+{
+	isFire = true;
+}
+
+void AProjectReloadCharacter::StopFire()
+{
+	isFire = false;
+}
+
+void AProjectReloadCharacter::RotateInit()
+{
+	FRotator temprot = GetActorRotation();
+	temprot.Yaw = Controller->GetControlRotation().Yaw;
+	SetActorRotation(temprot);
 }
 
 void AProjectReloadCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
