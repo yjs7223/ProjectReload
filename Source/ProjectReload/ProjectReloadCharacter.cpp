@@ -62,16 +62,16 @@ void AProjectReloadCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &AProjectReloadCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("Move Right / Left", this, &AProjectReloadCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("MoveForward", this, &AProjectReloadCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AProjectReloadCharacter::MoveRight);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("Turn Right / Left Gamepad", this, &AProjectReloadCharacter::TurnAtRate);
-	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("Look Up / Down Gamepad", this, &AProjectReloadCharacter::LookUpAtRate);
+	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	//PlayerInputComponent->BindAxis("Turn", this, &AProjectReloadCharacter::TurnAtRate);
+	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	//PlayerInputComponent->BindAxis("LookUp", this, &AProjectReloadCharacter::LookUpAtRate);
 
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AProjectReloadCharacter::StartFire);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &AProjectReloadCharacter::StopFire);
@@ -145,6 +145,24 @@ void AProjectReloadCharacter::RotateInit()
 	temprot.Yaw = Controller->GetControlRotation().Yaw;
 	SetActorRotation(temprot);
 }
+
+//bool AProjectReloadCharacter::CanBeSeenFrom(const FVector& ObserverLocation, FVector& OutSeenLocation, int32& NumberOfLoSChecksPerformed, float& OutSightStrength, const AActor* IgnoreActor, const bool* bWasVisible, int32* UserData) const
+//{
+//	FName Name_AILineOfSight = FName(TEXT("TestPawnLineOfSight"));
+//	FHitResult HitResults;
+//	FVector SightTargetLocation = GetMesh()->GetSocketLocation("spine_05");
+//
+//	bool hit = GetWorld()->LineTraceSingleByChannel(HitResults, ObserverLocation, SightTargetLocation, ECC_Visibility, FCollisionQueryParams(Name_AILineOfSight, false, IgnoreActor));
+//
+//	if (!hit)
+//	{
+//		OutSeenLocation = SightTargetLocation;
+//		OutSightStrength = 1;
+//		return true;
+//	}
+//	OutSightStrength = 0;
+//	return false;
+//}
 
 void AProjectReloadCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
